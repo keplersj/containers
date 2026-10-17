@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Dockerfile ARGs annotated with `# renovate: datasource=... depName=...` (CLI and tini versions). The matching sha256 ARGs must be bumped in the same PR -- the build's sha256sum -c fails until they are.",
+      "managerFilePatterns": [
+        "/(^|/)Dockerfile$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-]+) depName=(?<depName>[^\\s]+)\\nARG [A-Z_]+_VERSION=(?<currentValue>[^\\s]+)"
+      ],
+      "extractVersionTemplate": "^v?(?<version>.+)$"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "A CLI/tini bump needs its sha256 ARGs updated by hand, so never automerge",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "automerge": false
+    }
+  ]
+}

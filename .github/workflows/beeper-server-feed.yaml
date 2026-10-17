@@ -1,0 +1,51 @@
+name: beeper-server-feed
+
+# Beeper Server isn't on GitHub releases, npm or any registry Renovate understands -- only on
+# Beeper's update feed, which publishes no checksum. This resolves the feed, hashes the artifacts,
+# and opens a PR updating apps/beeper-server/server.lock.env. Merging that PR builds a new image.
+on:
+  schedule:
+    - cron: "17 9 * * 1" # weekly, Monday
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Server release channel
+        type: choice
+        options: [stable, nightly]
+        default: stable
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - id: resolve
+        working-directory: apps/beeper-server
+        run: |
+          ./resolve-server.sh "${{ inputs.channel || 'stable' }}" > server.lock.env.new
+          new=$(sed -n 's/^BEEPER_SERVER_VERSION=//p' server.lock.env.new)
+          old=$(sed -n 's/^BEEPER_SERVER_VERSION=//p' server.lock.env)
+          echo "version=${new}" >> "$GITHUB_OUTPUT"
+          # Only the version/URL/sha lines matter; the header carries today's date.
+          if diff <(grep '^BEEPER_' server.lock.env) <(grep '^BEEPER_' server.lock.env.new) >/dev/null; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"; rm server.lock.env.new
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"; mv server.lock.env.new server.lock.env
+            echo "::notice::beeper-server ${old} -> ${new}"
+          fi
+      - if: steps.resolve.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
+        with:
+          branch: beeper-server-feed
+          commit-message: "feat(beeper-server): Beeper Server ${{ steps.resolve.outputs.version }}"
+          title: "feat(beeper-server): Beeper Server ${{ steps.resolve.outputs.version }}"
+          body: |
+            Resolved from Beeper's update feed by `apps/beeper-server/resolve-server.sh`.
+            The feed publishes no checksum: the sha256s are what this run downloaded.
+
+            Merging builds `ghcr.io/keplersj/beeper-server:${{ steps.resolve.outputs.version }}-cli<cli>`.
+            Deployments pinned by digest pick it up through their own Renovate/update flow.
