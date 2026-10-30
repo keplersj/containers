@@ -12,7 +12,7 @@
 # No systemd, no `beeper targets enable`: the container runs beeper-server in the foreground under
 # tini, as an unprivileged user. All state lives under /data (mount a volume there).
 
-ARG DEBIAN_IMAGE=debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f
+ARG DEBIAN_IMAGE=debian:trixie-slim@sha256:f6b08b09a05725f9431502d3b5714f5c4576e82c1a84fa1debe0c24a7e0c3ec4
 ARG FETCH_IMAGE=buildpack-deps:trixie-curl@sha256:3dd78c060b4d7c97b426d0160f7d8876c84fbf2fc36e651e9c75620ac9a7da24
 
 # ---------------------------------------------------------------------------------------------
