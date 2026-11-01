@@ -19,7 +19,7 @@ ARG FETCH_IMAGE=buildpack-deps:trixie-curl@sha256:3dd78c060b4d7c97b426d0160f7d88
 FROM ${FETCH_IMAGE} AS fetch
 ARG TARGETARCH
 # renovate: datasource=github-releases depName=beeper/cli
-ARG BEEPER_CLI_VERSION=0.6.2
+ARG BEEPER_CLI_VERSION=0.6.4
 ARG BEEPER_CLI_SHA256_amd64=a881e1d2bc91e31218b251716644ec5f8d161d5ccb30e7eab66cf2ba6410511d
 ARG BEEPER_CLI_SHA256_arm64=2bd37043a4ed863621edc59e28aaa652e8193e55abca0e9477f5aeae1c65d629
 # renovate: datasource=github-releases depName=krallin/tini
