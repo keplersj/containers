@@ -13,7 +13,7 @@
 # tini, as an unprivileged user. All state lives under /data (mount a volume there).
 
 ARG DEBIAN_IMAGE=debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2
-ARG FETCH_IMAGE=buildpack-deps:trixie-curl@sha256:9e486725325568707dbd794ca9b53cffb7ddee2b8ac1b94941ca4d3d8c6e9df9
+ARG FETCH_IMAGE=buildpack-deps:trixie-curl@sha256:7b0be211f92be19e2698686857d77f3e2aaab4e61c5a7ad1b2c38d99032e4be0
 
 # ---------------------------------------------------------------------------------------------
 FROM ${FETCH_IMAGE} AS fetch
